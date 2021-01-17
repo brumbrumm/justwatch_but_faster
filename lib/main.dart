@@ -599,7 +599,6 @@ class MyDetail extends StatelessWidget{
       ],
     );
   }
-  }
 
   Widget _buildCapture(BuildContext context, String suffix){
     String _src = "https://images.justwatch.com$suffix";
