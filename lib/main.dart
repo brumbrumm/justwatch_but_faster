@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'simple wins',
       theme: ThemeData(
         brightness: Brightness.dark,
         // This is the theme of your application.
@@ -97,7 +97,6 @@ class _MyBottomNavigation extends State<MyBottomNavigation> {
 
   static List<Widget> _widgetOptions = <Widget>[
     PreHomePage(),
-    //MyHomePage(),
     MyNew(),
     MyWatchlist(),
     MyArchive(),
@@ -170,8 +169,7 @@ class PreHomePage extends StatelessWidget {
   List<String> _filterProviders = [];
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-        child: FutureBuilder<List<Setting>>(
+    return FutureBuilder<List<Setting>>(
       future: SQLiteDbProvider.db.getSettingByAttribute('provider'),
       builder: (context, snapshot) {
         if (snapshot.hasError) return Text(snapshot.error.toString());
@@ -181,7 +179,7 @@ class PreHomePage extends StatelessWidget {
                 child: CircularProgressIndicator(),
               );
       },
-    ));
+    );
   }
 
   Widget prepareStringList(List<Setting> _providerList) {
@@ -417,7 +415,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Image.network("https://images.justwatch.com${_oneMovie.poster}"),
           title: Text(_oneMovie.title),
           subtitle: Text(
-              "${_oneMovie.id} ${_oneMovie.originalReleaseYear} ${_oneMovie.objectType} ${_oneMovie.cinemaReleaseDate}"),
+              "${_oneMovie.originalReleaseYear} ${_oneMovie.objectType} ${_oneMovie.cinemaReleaseDate}"),
           onTap: () {
             Navigator.push(
               context,
@@ -601,16 +599,6 @@ class MyDetail extends StatelessWidget{
       ],
     );
   }
-  
-  Widget _buildScoring(List<Scoring> _scoringList){
-    if(_scoringList.isEmpty) return Text('no score available');
-    return Text("${_scoringList[0].providerType}: ${_scoringList[0].value}");
-    return ListView.builder(
-        itemCount: _scoringList.length,
-        itemBuilder: (BuildContext context, int index){
-          return Text("${_scoringList[index].providerType}: ${_scoringList[index].value}");
-        }
-    );
   }
 
   Widget _buildCapture(BuildContext context, String suffix){
