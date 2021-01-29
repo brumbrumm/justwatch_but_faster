@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:justwatch_but_faster/main.dart';
+import 'package:justwatch_but_faster/models/localeChoice.dart';
 import 'package:justwatch_but_faster/models/setting.dart';
 import 'package:justwatch_but_faster/models/provider.dart';
 import 'package:justwatch_but_faster/services/fetchService.dart';
@@ -16,26 +18,110 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   Future<List<Provider>> _providersFuture;
+  Future<List<LocaleChoice>> _localeFuture;
+  Future<Setting> _settingFuture;
+
+  int _indexSelected = 0;
+  int _stateCheck = 0;
 
   @override
   void initState(){
     super.initState();
 
     _providersFuture = fetchProvider();
+    _localeFuture = fetchLocale();
+    _indexSelected = 0;
+    _settingFuture = SQLiteDbProvider.db.getSettingById('locale');
   }
 
   @override
   Widget build(BuildContext context){
-    return Container(
-      child: FutureBuilder<List<Provider>>(
-        future: _providersFuture,
+    return Column(
+      children: <Widget>[
+        Expanded(
+          //height: 200,
+          child: FutureBuilder<List<Provider>>(
+            future: _providersFuture,
+            builder: (context, snapshot){
+              if (snapshot.hasError) return Text(snapshot.error);
+              return snapshot.hasData
+                  ? _buildProvider(snapshot.data)
+                  : Center(child: CircularProgressIndicator(),);
+            },
+          ),
+        ),
+        Container(
+          height: 200,
+          child: FutureBuilder<List<LocaleChoice>>(
+            future: _localeFuture,
+            builder: (context, snapshot){
+              if(snapshot.hasError) return Text(snapshot.error);
+              return snapshot.hasData
+                  ? _getLocaleFromDb(snapshot.data)
+                  : Center(child: CircularProgressIndicator(),);
+            }
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _getLocaleFromDb(List<LocaleChoice> _localeList){
+    return FutureBuilder<Setting>(
+        future: _settingFuture,
         builder: (context, snapshot){
-          if (snapshot.hasError) return Text(snapshot.error);
+          if(snapshot.hasError) return Text(snapshot.error);
           return snapshot.hasData
-              ? _buildProvider(snapshot.data)
+              ? _buildLocale(_localeList, snapshot.data)
               : Center(child: CircularProgressIndicator(),);
-        },
-      ),
+        }
+    );
+  }
+
+  void _saveInDb(LocaleChoice _loc){
+    _stateCheck ++;
+    SQLiteDbProvider.db.insertSetting(
+      Setting(
+         'locale',
+        _loc.fullLocale,
+        DateTime.now(),
+      )
+    );
+    AppBuilder.of(context).rebuild();
+  }
+
+  Widget _buildLocale(List<LocaleChoice> _localeList, Setting _setting){
+    if(_setting.attribute != null && _stateCheck == 0) {
+      for(int i = 0; i<_localeList.length; i++){
+        if(_localeList[i].fullLocale == _setting.attribute){
+          _indexSelected = i;
+          break;
+        }
+      }
+    }
+    return ListView.builder(
+      itemCount: _localeList.length,
+        itemBuilder: (BuildContext context, int index){
+        LocaleChoice _locale = _localeList[index];
+        return Card(
+          child: ListTile(
+            leading: Text(_locale.isoCode),
+            title: Text(_locale.country),
+            subtitle: ChoiceChip(
+              label: Icon(Icons.check_box),
+              selected: _indexSelected == index,
+              selectedColor: Colors.greenAccent,
+              backgroundColor: Colors.black87,
+              onSelected: (value){
+                setState(() {
+                  _indexSelected = value ? index : -1;
+                  if(value) _saveInDb(_locale);
+                });
+              },
+            ),
+          ),
+        );
+        }
     );
   }
 
@@ -200,6 +286,7 @@ class _SwitchBoxState extends State<SwitchBox> {
   _SwitchBoxState({Key key, this.setting, this.provider});
 
   int _intensity;
+  BuildContext contextG;
 
   bool _isSwitch;
 
@@ -217,6 +304,7 @@ class _SwitchBoxState extends State<SwitchBox> {
     SQLiteDbProvider.db.insertSetting(Setting(
         provider.shortName, 'provider', DateTime.now()
     ));
+    AppBuilder.of(contextG).rebuild();
   }
 
   void _setIntensityAsNull() {
@@ -235,6 +323,7 @@ class _SwitchBoxState extends State<SwitchBox> {
 
   @override
   Widget build(BuildContext context) {
+    contextG = context;
     return Switch(
           value: _isSwitch,
           onChanged: (value) {

@@ -20,13 +20,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aecd8d54-d600-477b-9d4e-05fd34f6ec29" name="Default Changelist" comment="Fix parent widget issue">
+      <change afterPath="$PROJECT_DIR$/ios/Flutter/.last_build_id" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/Podfile.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/models/localeChoice.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcworkspace/contents.xcworkspacedata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/services/fetchService.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/fetchService.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/settingView.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/settingView.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -94,7 +109,14 @@
       <option name="project" value="LOCAL" />
       <updated>1610919618668</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Edited README.md">
+      <created>1611006572057</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1611006572057</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -114,24 +136,33 @@
     <MESSAGE value="First commit" />
     <MESSAGE value="Added files" />
     <MESSAGE value="Fix parent widget issue" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix parent widget issue" />
+    <MESSAGE value="Edited README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="Edited README.md" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1398" height="155" key="GridCell.Tab.0.bottom" timestamp="1611000886593">
+    <state x="100" y="123" width="1240" height="593" key="AVDManager" timestamp="1611910641779">
       <screen x="0" y="23" width="1440" height="793" />
     </state>
-    <state width="1398" height="155" key="GridCell.Tab.0.bottom/0.23.1440.793@0.23.1440.793" timestamp="1611000886593" />
-    <state width="1398" height="155" key="GridCell.Tab.0.center" timestamp="1611000886592">
+    <state x="100" y="123" width="1240" height="593" key="AVDManager/0.23.1440.793@0.23.1440.793" timestamp="1611910641779" />
+    <state width="1398" height="286" key="GridCell.Tab.0.bottom" timestamp="1611914992843">
       <screen x="0" y="23" width="1440" height="793" />
     </state>
-    <state width="1398" height="155" key="GridCell.Tab.0.center/0.23.1440.793@0.23.1440.793" timestamp="1611000886592" />
-    <state width="1398" height="155" key="GridCell.Tab.0.left" timestamp="1611000886592">
+    <state width="1398" height="286" key="GridCell.Tab.0.bottom/0.23.1440.793@0.23.1440.793" timestamp="1611914992843" />
+    <state width="1398" height="286" key="GridCell.Tab.0.center" timestamp="1611914992841">
       <screen x="0" y="23" width="1440" height="793" />
     </state>
-    <state width="1398" height="155" key="GridCell.Tab.0.left/0.23.1440.793@0.23.1440.793" timestamp="1611000886592" />
-    <state width="1398" height="155" key="GridCell.Tab.0.right" timestamp="1611000886593">
+    <state width="1398" height="286" key="GridCell.Tab.0.center/0.23.1440.793@0.23.1440.793" timestamp="1611914992841" />
+    <state width="1398" height="286" key="GridCell.Tab.0.left" timestamp="1611914992840">
       <screen x="0" y="23" width="1440" height="793" />
     </state>
-    <state width="1398" height="155" key="GridCell.Tab.0.right/0.23.1440.793@0.23.1440.793" timestamp="1611000886593" />
+    <state width="1398" height="286" key="GridCell.Tab.0.left/0.23.1440.793@0.23.1440.793" timestamp="1611914992840" />
+    <state width="1398" height="286" key="GridCell.Tab.0.right" timestamp="1611914992842">
+      <screen x="0" y="23" width="1440" height="793" />
+    </state>
+    <state width="1398" height="286" key="GridCell.Tab.0.right/0.23.1440.793@0.23.1440.793" timestamp="1611914992842" />
+    <state x="25" y="140" width="670" height="676" key="search.everywhere.popup" timestamp="1611911442697">
+      <screen x="0" y="23" width="1440" height="793" />
+    </state>
+    <state x="25" y="140" width="670" height="676" key="search.everywhere.popup/0.23.1440.793@0.23.1440.793" timestamp="1611911442697" />
   </component>
 </project>

@@ -37,6 +37,30 @@ class SizeConfig {
   }
 }
 
+class AppBuilder extends StatefulWidget {
+  final Function(BuildContext) builder;
+
+  const AppBuilder({Key key, this.builder}) : super(key: key);
+
+  @override
+  AppBuilderState createState() => new AppBuilderState();
+
+  static AppBuilderState of(BuildContext context) {
+    return context.findAncestorStateOfType<AppBuilderState>();
+  }
+}
+
+class AppBuilderState extends State<AppBuilder> {
+  @override
+  Widget build(BuildContext context) {
+    return widget.builder(context);
+  }
+
+  void rebuild() {
+    setState(() {});
+  }
+}
+
 void main() {
   runApp(MyApp());
 }
@@ -45,27 +69,29 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'simple wins',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyBottomNavigation(),
-    );
+    return AppBuilder(builder: (BuildContext context){
+      return MaterialApp(
+        title: 'simple wins',
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          // This is the theme of your application.
+          //
+          // Try running your application with "flutter run". You'll see the
+          // application has a blue toolbar. Then, without quitting the app, try
+          // changing the primarySwatch below to Colors.green and then invoke
+          // "hot reload" (press "r" in the console where you ran "flutter run",
+          // or simply save your changes to "hot reload" in a Flutter IDE).
+          // Notice that the counter didn't reset back to zero; the application
+          // is not restarted.
+          primarySwatch: Colors.blue,
+          // This makes the visual density adapt to the platform that you run
+          // the app on. For desktop platforms, the controls will be smaller and
+          // closer together (more dense) than on mobile platforms.
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: MyBottomNavigation(),
+      );
+    },);
   }
 }
 
@@ -96,9 +122,9 @@ class _MyBottomNavigation extends State<MyBottomNavigation> {
   }
 
   static List<Widget> _widgetOptions = <Widget>[
-    PreHomePage(),
-    MyNew(),
     MyWatchlist(),
+    MyNew(),
+    PreHomePage(),
     MyArchive(),
     SettingsView(),
   ];
@@ -128,7 +154,7 @@ class _MyBottomNavigation extends State<MyBottomNavigation> {
             icon: _selectedIndex == 0
                 ? Icon(Icons.home)
                 : Icon(Icons.home_outlined),
-            label: 'home',
+            label: 'watchlist',
           ),
           BottomNavigationBarItem(
             icon: _selectedIndex == 1
@@ -140,7 +166,7 @@ class _MyBottomNavigation extends State<MyBottomNavigation> {
             icon: _selectedIndex == 2
                 ? Icon(Icons.list_rounded)
                 : Icon(Icons.format_list_numbered_rounded),
-            label: 'watchlist',
+            label: 'popular',
           ),
           BottomNavigationBarItem(
             icon: _selectedIndex == 3
@@ -242,6 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
           await fetchPopular(filterProviders, _pageNumber);
       setState(() {
         _hasMore = fetchedMovies.length == _defaultMoviesPerPageCount;
+        print("${fetchedMovies.length} ${_defaultMoviesPerPageCount} ${_hasMore}");
         _loading = false;
         _pageNumber += 1;
         _popularListState.addAll(fetchedMovies);
@@ -329,7 +356,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ));
             }
           }
-
           return Dismissible(
             key: UniqueKey(),
             secondaryBackground: Container(
@@ -430,12 +456,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class MyDetail extends StatelessWidget{
+class MyDetail extends StatefulWidget{
   final int id;
   final String objectType;
-
   MyDetail({Key key, this.id, this.objectType});
 
+  @override
+  _MyDetailState createState() => _MyDetailState();
+}
+class _MyDetailState extends State<MyDetail>{
   Movie movie;
 
   @override
@@ -450,7 +479,7 @@ class MyDetail extends StatelessWidget{
 
   Widget _getMovie(BuildContext context){
     return FutureBuilder<Movie>(
-      future: fetchMovie(objectType, id),
+      future: fetchMovie(widget.objectType, widget.id),
         builder: (context, snapshot){
           if(snapshot.hasError) return Text(snapshot.error.toString());
           return snapshot.hasData
