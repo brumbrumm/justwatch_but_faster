@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:global_configuration/global_configuration.dart';
 import 'package:justwatch_but_faster/main.dart';
 import 'package:justwatch_but_faster/models/localeChoice.dart';
 import 'package:justwatch_but_faster/models/setting.dart';
@@ -198,7 +197,7 @@ class _SettingsView extends State<SettingsViewOLD> {
                 builder: (context, snapshot){
                 if(snapshot.hasError) return Text(snapshot.error);
                 return snapshot.hasData
-                    ? _MyProviders(providers: snapshot.data,) // Text(snapshot.data.toString())
+                    ? _MyProviders(snapshot.data,) // Text(snapshot.data.toString())
                     : Center(
                   child: CircularProgressIndicator(),
                 );
@@ -214,23 +213,20 @@ class _SettingsView extends State<SettingsViewOLD> {
 
 class _MyProviders extends StatefulWidget{
   final List<Provider> providers;
-  _MyProviders({Key key, this.providers}) : super (key: key);
+  _MyProviders(this.providers);
 
   @override
-  _MyProvidersState createState() => _MyProvidersState(providers: providers);
+  _MyProvidersState createState() => _MyProvidersState();
 }
 
 class _MyProvidersState extends State<_MyProviders>{
-  final List<Provider> providers;
-  _MyProvidersState({Key key, this.providers});
-
   final mySettings = SettingBloc();
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Container(child:buildProviderList(providers)
+        Container(child:buildProviderList(widget.providers)
         ),
       ],
     ) ;
@@ -246,26 +242,6 @@ class _MyProvidersState extends State<_MyProviders>{
       },
     ));
   }
-
-  Widget _cardProvider(Provider _provider){
-    return Card(
-      child: FutureBuilder<Setting>(
-        future: SQLiteDbProvider.db.getSettingById(_provider.id.toString()),
-        builder: (context, snapshot){
-          if (snapshot.hasError) Text(snapshot.error);
-          return snapshot.hasData
-              ? _combineView(_provider, snapshot.data)
-              : Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _combineView(Provider _provider, Setting setting){
-    return SwitchBox(setting: setting, provider: _provider,); // Text(_provider.shortName);
-  }
 }
 
 class SwitchBox extends StatefulWidget {
@@ -274,7 +250,7 @@ class SwitchBox extends StatefulWidget {
   SwitchBox({Key key, this.setting, this.provider});
 
   @override
-  _SwitchBoxState createState() => _SwitchBoxState(setting: setting, provider: provider);
+  _SwitchBoxState createState() => _SwitchBoxState(setting, provider);
 }
 
 class _SwitchBoxState extends State<SwitchBox> {
@@ -283,9 +259,8 @@ class _SwitchBoxState extends State<SwitchBox> {
   
   final mySettings = SettingBloc();
 
-  _SwitchBoxState({Key key, this.setting, this.provider});
+  _SwitchBoxState(this.setting, this.provider);
 
-  int _intensity;
   BuildContext contextG;
 
   bool _isSwitch;
@@ -293,7 +268,6 @@ class _SwitchBoxState extends State<SwitchBox> {
   @override
   void initState(){
     super.initState();
-    _intensity = setting.attribute == null ? 0 : 1;
     _isSwitch = setting.attribute == null ? false : true;
   }
 
@@ -309,14 +283,12 @@ class _SwitchBoxState extends State<SwitchBox> {
 
   void _setIntensityAsNull() {
     setState(() {
-      _intensity = 0;
       mySettings.delete(setting.id);
     });
   }
 
   void _setIntensityAsOne() {
     setState(() {
-      _intensity = 1;
       _saveInDb();
     });
   }

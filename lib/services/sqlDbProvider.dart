@@ -47,7 +47,7 @@ class SQLiteDbProvider {
     List<Map> results = await db.query(
       "Setting", columns: Setting.columns,
     );
-    List<Setting> settings = new List();
+    List<Setting> settings = [];
     results.forEach((element) {
       Setting setting = Setting.fromJson(element);
       settings.add(setting);
@@ -62,7 +62,7 @@ class SQLiteDbProvider {
     List<Map> results = await db.query(
         "Movie", columns: Movie.columns, orderBy: "dateTime DESC"
     );
-    List<Movie> movies = new List();
+    List<Movie> movies = [];
     results.forEach((result){
       Movie movie = Movie.fromDb(result);
       movies.add(movie);
@@ -75,7 +75,7 @@ class SQLiteDbProvider {
     List<Map> results = await db.query(
         "Setting", where: "attribute = ?", whereArgs: [attribute]
     );
-    List<Setting> settings = new List();
+    List<Setting> settings = [];
     results.forEach((result){
       Setting setting = Setting.fromJson(result);
       settings.add(setting);
@@ -89,7 +89,7 @@ class SQLiteDbProvider {
     List<Map> results = await db.query(
         "Movie", columns: Movie.columns, where: "isWatchList = 1", orderBy: "dateTime DESC"
     );
-    List<Movie> movies = new List();
+    List<Movie> movies = [];
     results.forEach((result){
       Movie movie = Movie.fromDb(result);
       movies.add(movie);
@@ -103,7 +103,7 @@ class SQLiteDbProvider {
     List<Map> results = await db.query(
         "Movie", columns: Movie.columns, where: "isArchive = 1", orderBy: "dateTime DESC"
     );
-    List<Movie> movies = new List();
+    List<Movie> movies = [];
     results.forEach((result){
       Movie movie = Movie.fromDb(result);
       movies.add(movie);

@@ -92,7 +92,7 @@ Future<List<Provider>> fetchProvider() async{
   }
 }
 
-Future<List<Movie>> fetchPopular(List<String> providers, int pageNumber) async{
+Future<List<Movie>> fetchPopular(List<String> providers, int pageNumber,) async{
   String provider = "";
   int _counter = 0;
   providers.forEach((element) {
@@ -108,7 +108,9 @@ Future<List<Movie>> fetchPopular(List<String> providers, int pageNumber) async{
   String locale = localSetting.attribute ?? 'de_DE';
 
   final String prefixUrl = 'https://apis.justwatch.com/content/titles/$locale/popular';
-  final String url = '?body=%7B%22fields%22:[%22cinema_release_date%22,%22full_path%22,%22full_paths%22,%22id%22,%22localized_release_date%22,%22object_type%22,%22poster%22,%22scoring%22,%22title%22,%22tmdb_popularity%22,%22backdrops%22,%22offers%22,%22original_release_year%22,%22backdrops%22],%22providers%22:[$provider],%22enable_provider_filter%22:false,%22monetization_types%22:[],%22page%22:$pageNumber,%22page_size%22:30,%22matching_offers_only%22:true%7D&language=de';
+  // final String url = '?body=%7B%22fields%22:[%22cinema_release_date%22,%22full_path%22,%22full_paths%22,%22id%22,%22localized_release_date%22,%22object_type%22,%22poster%22,%22scoring%22,%22title%22,%22tmdb_popularity%22,%22backdrops%22,%22offers%22,%22original_release_year%22,%22backdrops%22],%22providers%22:[$provider],%22enable_provider_filter%22:false,%22monetization_types%22:[],%22page%22:$pageNumber,%22page_size%22:30,%22matching_offers_only%22:true%7D&language=${locale.substring(0,2)}';
+
+  final String url = '?body=%7B%22fields%22:[%22cinema_release_date%22,%22full_path%22,%22full_paths%22,%22id%22,%22localized_release_date%22,%22object_type%22,%22poster%22,%22scoring%22,%22title%22,%22tmdb_popularity%22,%22backdrops%22,%22production_countries%22,%22offers%22,%22original_release_year%22,%22backdrops%22],%22providers%22:[$provider],%22sort_asc%22:false,%22enable_provider_filter%22:false,%22monetization_types%22:[],%22page%22:$pageNumber,%22page_size%22:30,%22matching_offers_only%22:true%7D&language=${locale.substring(0,2)}';
   print(prefixUrl + url);
   final response = await retry(
         () => http.get(

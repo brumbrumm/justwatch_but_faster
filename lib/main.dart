@@ -8,6 +8,7 @@ import 'package:justwatch_but_faster/services/fetchService.dart';
 import 'package:justwatch_but_faster/services/sqlDbProvider.dart';
 
 import 'package:justwatch_but_faster/views/settingView.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class SizeConfig {
   static MediaQueryData _mediaQueryData;
@@ -108,13 +109,13 @@ class _MyBottomNavigation extends State<MyBottomNavigation> {
   String getTitle(int indexTitle) {
     if (indexTitle == 0) {
       return "Simple Wins";
-    } else if (indexTitle == 1) {
+    } /*else if (indexTitle == 1) {
       return "New";
-    } else if (indexTitle == 2) {
+    }*/ else if (indexTitle == 1) {
       return "WatchList";
-    } else if (indexTitle == 3) {
+    } else if (indexTitle == 2) {
       return "Archive";
-    } else if (indexTitle == 4) {
+    } else if (indexTitle == 3) {
       return "Settings";
     } else {
       return "Simple Wins";
@@ -123,7 +124,7 @@ class _MyBottomNavigation extends State<MyBottomNavigation> {
 
   static List<Widget> _widgetOptions = <Widget>[
     MyWatchlist(),
-    MyNew(),
+    // MyNew(),
     PreHomePage(),
     MyArchive(),
     SettingsView(),
@@ -156,26 +157,26 @@ class _MyBottomNavigation extends State<MyBottomNavigation> {
                 : Icon(Icons.home_outlined),
             label: 'watchlist',
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             icon: _selectedIndex == 1
                 ? Icon(Icons.new_releases)
                 : Icon(Icons.new_releases_outlined),
             label: 'new',
-          ),
+          ),*/
           BottomNavigationBarItem(
-            icon: _selectedIndex == 2
+            icon: _selectedIndex == 1
                 ? Icon(Icons.list_rounded)
                 : Icon(Icons.format_list_numbered_rounded),
             label: 'popular',
           ),
           BottomNavigationBarItem(
-            icon: _selectedIndex == 3
+            icon: _selectedIndex == 2
                 ? Icon(Icons.archive)
                 : Icon(Icons.archive_outlined),
             label: 'archive',
           ),
           BottomNavigationBarItem(
-            icon: _selectedIndex == 4
+            icon: _selectedIndex == 3
                 ? Icon(Icons.settings_applications)
                 : Icon(Icons.settings_applications_outlined),
             label: "settings",
@@ -212,233 +213,155 @@ class PreHomePage extends StatelessWidget {
     _providerList.forEach((element) {
       _filterProviders.add(element.id);
     });
-    return MyHomePage(
-      filterProviders: _filterProviders,
-    );
+    return MyHomePage(_filterProviders,);
   }
 }
 
 class MyHomePage extends StatefulWidget {
   final List<String> filterProviders;
-  MyHomePage({Key key, this.filterProviders}) : super(key: key);
+  MyHomePage(this.filterProviders);
 
   @override
-  _MyHomePageState createState() =>
-      _MyHomePageState(filterProviders: filterProviders);
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  Future<List<Movie>> _movieFutureList;
-
-  Future<List<Setting>> _providerFutureList;
-
-  final List<String> filterProviders;
-  _MyHomePageState({Key key, this.filterProviders});
-
-  List<Movie> _popularListState;
+class _HomePageState extends State<MyHomePage>{
+  static const _pageSize = 30;
 
   final myMovies = MovieBloc();
+  List<Movie> _popularListState;
 
-  bool _hasMore;
-  bool _error;
-  bool _loading;
-  int _pageNumber;
-
-  final int _defaultMoviesPerPageCount = 30;
-  final int _nextPageThreshold = 5;
+  final PagingController<int, Movie> _pagingController =
+  PagingController(firstPageKey: 0);
 
   @override
   void initState() {
-    super.initState();
-    //filterProviders = [];
-
-    _pageNumber = 1;
-    _hasMore = true;
-    _error = false;
-    _loading = true;
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
     _popularListState = [];
-    _fetchMovies();
-    //_providerFutureList = SQLiteDbProvider.db.getSettingByAttribute('provider');
-    _movieFutureList = fetchPopular(filterProviders, _pageNumber);
+    super.initState();
   }
 
-  Future<void> _fetchMovies() async {
+  Future<void> _fetchPage(int pageKey) async {
     try {
-      List<Movie> fetchedMovies =
-          await fetchPopular(filterProviders, _pageNumber);
-      setState(() {
-        _hasMore = fetchedMovies.length == _defaultMoviesPerPageCount;
-        print("${fetchedMovies.length} ${_defaultMoviesPerPageCount} ${_hasMore}");
-        _loading = false;
-        _pageNumber += 1;
-        _popularListState.addAll(fetchedMovies);
-      });
-    } catch (e) {
-      setState(() {
-        _loading = false;
-        _error = true;
-      });
-    }
-  }
-
-  Widget getBody() {
-    if (_popularListState.isEmpty) {
-      if (_loading) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: CircularProgressIndicator(),
-          ),
-        );
-      } else if (_error) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text('Error while loading'),
-          ),
-        );
+      final newItems = await fetchPopular(widget.filterProviders, pageKey);
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newItems);
       } else {
-        return Text('List is empty');
+        final nextPageKey = pageKey + 1; // newItems.length;
+        _pagingController.appendPage(newItems, nextPageKey);
       }
-    } else {
-      return _buildPopularList();
+    } catch (error) {
+      _pagingController.error = error;
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      /*appBar: AppBar(
-        title: Text('Simple Win'),
-      ),*/
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Flexible(
-              child: getBody(),
-            ),
-          ],
+  Widget _buildListPage(BuildContext context, Movie _itemMovie){
+    if(_popularListState.contains(_itemMovie)) return Container();
+    return Dismissible(
+      key: UniqueKey(),
+      secondaryBackground: Container(
+        color: Colors.red[500],
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+          child: Icon(
+            Icons.archive,
+            color: Colors.white70,
+          ),
         ),
       ),
+      background: Container(
+        color: Colors.green[500],
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+          child: Icon(Icons.list_rounded, color: Colors.white70),
+        ),
+      ),
+      onDismissed: (direction) {
+        if (direction == DismissDirection.endToStart) {
+          Movie _tempMovie = Movie(
+            id: _itemMovie.id,
+            title: _itemMovie.title,
+            poster: _itemMovie.poster,
+            objectType: _itemMovie.objectType,
+            isWatchList: false,
+            isArchive: true,
+            updateTime: DateTime.now(),
+          );
+          myMovies.add(_tempMovie);
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text("archive ${_itemMovie.title}")
+              )
+          );
+          setState(() {
+            _popularListState.add(_itemMovie);
+          });
+        } else {
+          Movie _tempMovie = Movie(
+            id: _itemMovie.id,
+            title: _itemMovie.title,
+            poster: _itemMovie.poster,
+            objectType: _itemMovie.objectType,
+            isWatchList: true,
+            isArchive: false,
+            updateTime: DateTime.now(),
+          );
+          myMovies.add(_tempMovie);
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text("watchlist ${_itemMovie.title}")
+              )
+          );
+
+          setState(() {
+            _popularListState.add(_itemMovie);
+          });
+        }
+      },
+      child: FutureBuilder<bool>(
+        future: SQLiteDbProvider.db.isInDb(_itemMovie.id),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Text('Stream error');
+          return snapshot.hasData
+              ? snapshot.data
+              ? Container()
+              : cardInk(_itemMovie)
+              : Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+
+      //cardInk(_popularListState[index]),
     );
   }
 
-  List<Movie> _excluded(List<Movie> _popular) {
-    _popular.forEach((element) async {
-      bool mov = await SQLiteDbProvider.db.isInDb(element.id);
-      print(mov);
-      if (mov) _popular.remove(element);
-    });
-    return _popular;
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: _buildPageView(context),
+    );
   }
 
-  Widget _buildPopularList() {
-    //_popularList = _popularListState ?? _popularList;
-    return ListView.builder(
-        physics: AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(2),
-        itemCount: _popularListState.length +
-            (_hasMore ? 1 : 0), // _popularList.length,
-        itemBuilder: (context, index) {
-          if (index == _popularListState.length - _nextPageThreshold &&
-              _hasMore) {
-            _fetchMovies();
-          }
-          if (index == _popularListState.length) {
-            if (_error) {
-              return Text('Error something went wrong');
-            } else {
-              return Center(
-                  child: Padding(
-                padding: EdgeInsets.all(8),
-                child: CircularProgressIndicator(),
-              ));
-            }
-          }
-          return Dismissible(
-            key: UniqueKey(),
-            secondaryBackground: Container(
-              color: Colors.red[500],
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: Icon(
-                  Icons.archive,
-                  color: Colors.white70,
-                ),
-              ),
-            ),
-            background: Container(
-              color: Colors.green[500],
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: Icon(Icons.list_rounded, color: Colors.white70),
-              ),
-            ),
-            onDismissed: (direction) {
-              if (direction == DismissDirection.endToStart) {
-                Movie _tempMovie = Movie(
-                  id: _popularListState[index].id,
-                  title: _popularListState[index].title,
-                  poster: _popularListState[index].poster,
-                  objectType: _popularListState[index].objectType,
-                  isWatchList: false,
-                  isArchive: true,
-                  updateTime: DateTime.now(),
-                );
-                myMovies.add(_tempMovie);
-                Scaffold.of(context).showSnackBar(SnackBar(
-                    content:
-                        Text("archive ${_popularListState[index].title}")));
-                _popularListState.remove(_popularListState[index]);
-                setState(() {
-                  _popularListState = _popularListState;
-                });
-              } else {
-                Movie _tempMovie = Movie(
-                  id: _popularListState[index].id,
-                  title: _popularListState[index].title,
-                  poster: _popularListState[index].poster,
-                  objectType: _popularListState[index].objectType,
-                  isWatchList: true,
-                  isArchive: false,
-                  updateTime: DateTime.now(),
-                );
-                myMovies.add(_tempMovie);
-                Scaffold.of(context).showSnackBar(SnackBar(
-                    content:
-                        Text("watchlist ${_popularListState[index].title}")));
-                _popularListState.remove(_popularListState[index]);
-                setState(() {
-                  _popularListState = _popularListState;
-                });
-              }
-            },
-            child: FutureBuilder<bool>(
-              future: SQLiteDbProvider.db.isInDb(_popularListState[index].id),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) return Text('Stream error');
-                return snapshot.hasData
-                    ? snapshot.data
-                        ? Container()
-                        : cardInk(_popularListState[index])
-                    : Center(
-                        child: CircularProgressIndicator(),
-                      );
-              },
-            ),
-
-            //cardInk(_popularListState[index]),
-          );
-        });
-  }
+  Widget _buildPageView(BuildContext context) =>
+      PagedListView<int, Movie>(
+        pagingController: _pagingController,
+        builderDelegate: PagedChildBuilderDelegate<Movie>(
+          itemBuilder: (context, item, index) => _buildListPage(
+            context, item,
+          ),
+        ),
+      );
 
   Widget cardInk(Movie _oneMovie) {
     return InkWell(
       child: Card(
         child: ListTile(
           leading:
-              Image.network("https://images.justwatch.com${_oneMovie.poster}"),
+          Image.network("https://images.justwatch.com${_oneMovie.poster}"),
           title: Text(_oneMovie.title),
           subtitle: Text(
               "${_oneMovie.originalReleaseYear} ${_oneMovie.objectType} ${_oneMovie.cinemaReleaseDate}"),
@@ -454,6 +377,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
+  }
 }
 
 class MyDetail extends StatefulWidget{
@@ -464,15 +392,13 @@ class MyDetail extends StatefulWidget{
   @override
   _MyDetailState createState() => _MyDetailState();
 }
+
 class _MyDetailState extends State<MyDetail>{
   Movie movie;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*appBar: AppBar(
-        title: Text('test'),
-      ),*/
       body: _getMovie(context),
     );
   }
@@ -605,7 +531,23 @@ class _MyDetailState extends State<MyDetail>{
                 margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
                 height: 65,
                 width: double.infinity,
-                child: FlatButton(
+                child: TextButton(
+                  child: Text('add to watchlist',
+                  style: TextStyle(color: Colors.white70, fontSize: 15, letterSpacing: 1),
+                  ),
+                  onPressed: () => SQLiteDbProvider.db.insertMovie(
+                      Movie(
+                        id: movie.id,
+                        title: movie.title,
+                        poster: movie.poster,
+                        objectType: movie.objectType,
+                        isWatchList: true,
+                        isArchive: false,
+                        updateTime: DateTime.now(),
+                      )
+                  ),
+                ),
+    ), /*FlatButton(
                   child: Text('add to watchlist',
                   style: TextStyle(color: Colors.white70, fontSize: 15, letterSpacing: 1),
                   ),
@@ -620,8 +562,8 @@ class _MyDetailState extends State<MyDetail>{
                       updateTime: DateTime.now(),
                     )
                   ),
-                ),
-              ),
+                ),*/
+              //),
             ],
           ),
         ),
@@ -668,17 +610,6 @@ class _MyDetailState extends State<MyDetail>{
           ),
         )
       ]
-    );
-  }
-
-  Widget _buildFullScreen(BuildContext context, String src){
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: NetworkImage(src),
-          fit: BoxFit.cover,
-        )
-      ),
     );
   }
 }
@@ -776,106 +707,6 @@ class _AlterntativeMyDetailState extends State<AlternativeMyDetail>{
     return Text("");
   }
 }
-class VERSION_MyDetail extends StatelessWidget {
-  final int id;
-  final String objectType;
-  VERSION_MyDetail({Key key, this.id, this.objectType});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      children: <Widget>[
-        Container(
-          child: FutureBuilder<Movie>(
-            future: fetchMovie(objectType, id),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) Text(snapshot.error.toString());
-              return snapshot.hasData
-                  ?  _buildDetailView(context, snapshot.data)
-                  : Center(
-                      child: CircularProgressIndicator(),
-                    );
-            },
-          ),
-        ),
-      ],
-    ));
-  }
-
-  Widget _buildDetailView(BuildContext context, Movie movie) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.only(left: 10.0),
-          height: MediaQuery.of(context).size.height * 0.5,
-          decoration: new BoxDecoration(
-            image: new DecorationImage(
-              image: NetworkImage(
-                  "https://images.justwatch.com${movie.posters[0].backdropUrl}"), //Image.network("https://images.justwatch.com${_movie.poster}"),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        Container(
-          height: MediaQuery.of(context).size.height * 0.5,
-          padding: EdgeInsets.all(40.0),
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(color: Color.fromRGBO(50, 40, 70, 0.7)),
-          child: Center(
-            child: _buildNameScorring(movie),
-          ),
-        ),
-        Positioned(
-            left: 6.0,
-            top: 54.0,
-            child: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(Icons.arrow_back_rounded, color: Colors.white70),
-            )),
-      ],
-    );
-  }
-
-  Widget _buildNameScorring(Movie _movie) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          height: 120.0,
-        ),
-        Text(
-          _movie.title,
-          style: TextStyle(color: Colors.white70, fontSize: 42.0),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            ListView.builder(
-                itemCount: _movie.scorings.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Text(
-                      "${_movie.scorings[index].value} ${_movie.scorings[index].providerType}");
-                }),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget _buildDescription(Movie _movie) {
-    return Container(child: Text("${_movie.shortDescription}"));
-  }
-}
-
-class MyNew extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Text('new');
-  }
-}
 
 class MyWatchlist extends StatefulWidget {
   MyWatchlist({Key key}) : super(key: key);
@@ -930,8 +761,11 @@ class _MyWatchListState extends State<MyWatchlist> {
               ),
               onDismissed: (direction) {
                 myList.delete(_movie.id);
-                Scaffold.of(context)
-                    .showSnackBar(SnackBar(content: Text('delete')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('delete')
+                    )
+                );
               },
               child: ListTile(
                 leading: Image.network(
@@ -1005,8 +839,11 @@ class _MyArchiveState extends State<MyArchive> {
               ),
               onDismissed: (direction) {
                 myList.delete(_movie.id);
-                Scaffold.of(context)
-                    .showSnackBar(SnackBar(content: Text('delete')));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('delete')
+                    )
+                );
               },
               child: ListTile(
                 leading: Image.network(

@@ -29,6 +29,7 @@ dependencies:
   sqflite:
   global_configuration:
   retry:
+  infinite_scroll_pagination:
 
 
   # The following adds the Cupertino Icons font to your application.
