@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:justwatch_but_faster/models/localeChoice.dart';
+import 'package:justwatch_but_faster/models/locale_choice.dart';
 import 'package:justwatch_but_faster/models/movie.dart';
 import 'package:justwatch_but_faster/models/provider.dart';
 import 'package:justwatch_but_faster/models/setting.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:justwatch_but_faster/services/sqlDbProvider.dart';
+import 'package:justwatch_but_faster/services/sql_db_provider.dart';
 import 'package:retry/retry.dart';
 
 
@@ -27,41 +27,44 @@ List<Movie> parsePopular(String responseBody){
   return parsed.map<Movie>((json) => Movie.fromPopular((json))).toList();
 }
 
-Movie parseMovie(String responseBody){
+Movie parseMovie(String responseBody, bool isInWatchList){
   final parsed = json.decode(responseBody);
-  Movie movie = Movie.fromMovie(parsed);
+
+  Movie movie = Movie.fromMovie(parsed, isInWatchList);
   return movie;
 }
 
 Future<Movie> fetchMovie(String type, int id) async{
-  Setting localSetting = await SQLiteDbProvider.db.getSettingById('locale');
-  String locale = localSetting.attribute ?? 'de_DE';
+  Setting localSetting = await SQLiteDbProvider().getSettingById('locale', attribute: "de_DE");
+  String locale = localSetting.attribute;
+
+  Movie? movie = await SQLiteDbProvider().getMovieById(id);
   final String url = "https://apis.justwatch.com/content/titles/$type/$id/locale/$locale?language=${locale.substring(0,2)}";
   print(url);
   final response = await retry(
         () => http.get(
-        url, headers: {
+        Uri.parse(url), headers: {
       //'User-Agent':	'SimpleWin',
     }
-    ).timeout(Duration(seconds: 5)),
+    ).timeout(const Duration(seconds: 5)),
     // Retry on SocketException or TimeoutException
     retryIf: (e) => e is SocketException || e is TimeoutException,
   );
   if (response.statusCode == 200){
-    return parseMovie(response.body);
+    return parseMovie(response.body, movie != null);
   } else {
     throw Exception('Unable to fetch details from REST API');
   }
 }
 
 Future<List<LocaleChoice>> fetchLocale() async{
-final String url = "https://apis.justwatch.com/content/locales/state";
+const String url = "https://apis.justwatch.com/content/locales/state";
 final response = await retry(
     () => http.get(
-        url, headers: {
+        Uri.parse(url), headers: {
       //'User-Agent':	'SimpleWin',
         }
-    ).timeout(Duration(seconds: 5)),
+    ).timeout(const Duration(seconds: 5)),
   retryIf: (e) => e is SocketException || e is TimeoutException,
 );
 if (response.statusCode == 200){
@@ -72,15 +75,15 @@ if (response.statusCode == 200){
 }
 
 Future<List<Provider>> fetchProvider() async{
-  Setting localSetting = await SQLiteDbProvider.db.getSettingById('locale');
-  String locale = localSetting.attribute ?? 'de_DE';
+  Setting localSetting = await SQLiteDbProvider().getSettingById('locale', attribute: "de_DE");
+  String locale = localSetting.attribute;
   final String url = "https://apis.justwatch.com/content/providers/locale/$locale";
   final response = await retry(
         () => http.get(
-        url, headers: {
+            Uri.parse(url), headers: {
       //'User-Agent':	'SimpleWin',
     }
-    ).timeout(Duration(seconds: 5)),
+    ).timeout(const Duration(seconds: 5)),
     // Retry on SocketException or TimeoutException
     retryIf: (e) => e is SocketException || e is TimeoutException,
   );
@@ -92,7 +95,13 @@ Future<List<Provider>> fetchProvider() async{
   }
 }
 
-Future<List<Movie>> fetchPopular(List<String> providers, int pageNumber,) async{
+Future<List<Movie>> fetchPopular(int pageNumber,) async{
+  List<Setting> providerList = await SQLiteDbProvider().getSettingByAttribute('provider');
+  List<String> providers = [];
+  for (var element in providerList) {
+    providers.add(element.id);
+  }
+
   String provider = "";
   int _counter = 0;
   providers.forEach((element) {
@@ -104,26 +113,28 @@ Future<List<Movie>> fetchPopular(List<String> providers, int pageNumber,) async{
     _counter += 1;
   });
 
-  Setting localSetting = await SQLiteDbProvider.db.getSettingById('locale');
-  String locale = localSetting.attribute ?? 'de_DE';
+  Setting localSetting = await SQLiteDbProvider().getSettingById('locale', attribute: "de_DE");
+  String locale = localSetting.attribute;
 
   final String prefixUrl = 'https://apis.justwatch.com/content/titles/$locale/popular';
   // final String url = '?body=%7B%22fields%22:[%22cinema_release_date%22,%22full_path%22,%22full_paths%22,%22id%22,%22localized_release_date%22,%22object_type%22,%22poster%22,%22scoring%22,%22title%22,%22tmdb_popularity%22,%22backdrops%22,%22offers%22,%22original_release_year%22,%22backdrops%22],%22providers%22:[$provider],%22enable_provider_filter%22:false,%22monetization_types%22:[],%22page%22:$pageNumber,%22page_size%22:30,%22matching_offers_only%22:true%7D&language=${locale.substring(0,2)}';
 
   final String url = '?body=%7B%22fields%22:[%22cinema_release_date%22,%22full_path%22,%22full_paths%22,%22id%22,%22localized_release_date%22,%22object_type%22,%22poster%22,%22scoring%22,%22title%22,%22tmdb_popularity%22,%22backdrops%22,%22production_countries%22,%22offers%22,%22original_release_year%22,%22backdrops%22],%22providers%22:[$provider],%22sort_asc%22:false,%22enable_provider_filter%22:false,%22monetization_types%22:[],%22page%22:$pageNumber,%22page_size%22:30,%22matching_offers_only%22:true%7D&language=${locale.substring(0,2)}';
-  print(prefixUrl + url);
+  // print(prefixUrl + url);
+
   final response = await retry(
         () => http.get(
-        prefixUrl + url, headers: {
+            Uri.parse(prefixUrl + url), headers: {
       //'User-Agent':	'SimpleWin',
     }
-    ).timeout(Duration(seconds: 5)),
+    ).timeout(const Duration(seconds: 5)),
     // Retry on SocketException or TimeoutException
     retryIf: (e) => e is SocketException || e is TimeoutException,
   );
-  print(response.statusCode);
+
   if (response.statusCode == 200){
-    //print(response.body);
+    final movies = parsePopular(response.body);
+    return movies;
     return parsePopular(response.body);
   } else {
     throw Exception('Unable to fetch details from REST API');

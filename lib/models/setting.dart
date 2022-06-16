@@ -6,7 +6,7 @@ class Setting {
   static final columns = ["id", "attribute", "dateTime"];
   Setting(this.id, this.attribute, this.dateTime);
 
-  factory Setting.fromJson(Map<String, dynamic> json){
+  factory Setting.fromJson(Map<dynamic, dynamic> json){
     return Setting(
       json['id'],
       json['attribute'],

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/justwatch_but_faster.iml" filepath="$PROJECT_DIR$/.idea/justwatch_but_faster.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/justwatch_but_faster_android.iml" filepath="$PROJECT_DIR$/android/justwatch_but_faster_android.iml" />
     </modules>
   </component>
 </project>

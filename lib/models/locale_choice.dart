@@ -1,7 +1,7 @@
 class LocaleChoice{
-  final String fullLocale;
-  final String isoCode;
-  final String country;
+  final String? fullLocale;
+  final String? isoCode;
+  final String? country;
 
   LocaleChoice({this.fullLocale, this.isoCode, this.country});
 

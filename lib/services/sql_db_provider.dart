@@ -1,33 +1,17 @@
-import 'dart:async';
-import 'package:path/path.dart';
+import 'dart:async' show Future;
+import 'package:path/path.dart' show join;
 import 'package:sqflite/sqflite.dart';
 
 import 'package:justwatch_but_faster/models/movie.dart';
 import 'package:justwatch_but_faster/models/setting.dart';
 
 class SQLiteDbProvider {
-  SQLiteDbProvider._privateConstructor();
-  static final SQLiteDbProvider db = SQLiteDbProvider._privateConstructor();
-
-  static Database _database;
-
-  Future<Database> get database async {
-    /*await _database.close();
-    String path = join(await getDatabasesPath(), 'database.db');
-    await deleteDatabase(path);
-    _database = await initDB();*/
-
-    if (_database != null)
-      return _database;
-    _database = await initDB();
-    return _database;
-  }
-
-  initDB() async {
+  Future<Database> initializeDB() async{
     String path = join(await getDatabasesPath(), 'database.db');
 
-    return await openDatabase(
-        path, version: 1,
+    return openDatabase(
+        path,
+        version: 1,
         onOpen: (db){},
         onCreate: (Database db, int version) async {
           await db.execute(
@@ -42,7 +26,7 @@ class SQLiteDbProvider {
   }
 
   Future<List<Setting>> getAllSettings() async{
-    final db = await database;
+    final db = await initializeDB();
 
     List<Map> results = await db.query(
       "Setting", columns: Setting.columns,
@@ -57,7 +41,7 @@ class SQLiteDbProvider {
   }
 
   Future<List<Movie>> getAllMovies() async{
-    final db = await database;
+    final db = await initializeDB();
 
     List<Map> results = await db.query(
         "Movie", columns: Movie.columns, orderBy: "dateTime DESC"
@@ -71,7 +55,7 @@ class SQLiteDbProvider {
   }
 
   Future<List<Setting>> getSettingByAttribute(String attribute) async {
-    final db = await database;
+    final db = await initializeDB();
     List<Map> results = await db.query(
         "Setting", where: "attribute = ?", whereArgs: [attribute]
     );
@@ -84,7 +68,7 @@ class SQLiteDbProvider {
   }
 
   Future<List<Movie>> getAllWatchlist() async{
-    final db = await database;
+    final db = await initializeDB();
 
     List<Map> results = await db.query(
         "Movie", columns: Movie.columns, where: "isWatchList = 1", orderBy: "dateTime DESC"
@@ -98,7 +82,7 @@ class SQLiteDbProvider {
   }
 
   Future<List<Movie>> getAllArchive() async{
-    final db = await database;
+    final db = await initializeDB();
 
     List<Map> results = await db.query(
         "Movie", columns: Movie.columns, where: "isArchive = 1", orderBy: "dateTime DESC"
@@ -111,28 +95,26 @@ class SQLiteDbProvider {
     return movies;
   }
 
-  Future<Setting> getSettingById(String id) async {
-    final db = await database;
+  Future<Setting> getSettingById(String id, {String attribute = "en"}) async {
+    final db = await initializeDB();
     var result = await db.query(
         "Setting", where: "id = ?", whereArgs: [id]
     );
     Setting setting = result.isNotEmpty ? Setting.fromJson(result.first) :
-    Setting(id, null, DateTime.now());
+    Setting(id, attribute, DateTime.now());
     return setting;
   }
 
-  Future<Movie> getMovieById(int id) async {
-    final db = await database;
+  Future<Movie?> getMovieById(int id) async {
+    final db = await initializeDB();
     var result = await db.query(
         "Movie", where: "id = ?", whereArgs: [id]
     );
-    Movie movie = result.isNotEmpty ? Movie.fromDb(result.first) :
-    Movie();
-    return movie;
+    return result.isNotEmpty ? Movie.fromDb(result.first) : null;
   }
 
   Future<bool> isInDb(int id) async {
-    final db = await database;
+    final db = await initializeDB();
     var result = await db.query(
         "Movie", where: "id = ?", whereArgs: [id]
     );
@@ -140,22 +122,23 @@ class SQLiteDbProvider {
   }
 
   Future<void> insertSetting(Setting setting) async{
-    final db = await database;
+    final db = await initializeDB();
     await db.insert("Setting", setting.toMap(), conflictAlgorithm: ConflictAlgorithm.replace,);
   }
 
   Future<void> insertMovie(Movie movie) async{
-    final db = await database;
+    final db = await initializeDB();
     await db.insert("Movie", movie.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<void> deleteSetting(String id) async{
-    final db = await database;
+    final db = await initializeDB();
     await db.delete("Setting", where: "id = ?", whereArgs: [id],);
+    print('delete $id');
   }
 
   Future<void> deleteMovie(int id) async{
-    final db = await database;
+    final db = await initializeDB();
     await db.delete("Movie", where: "id = ?", whereArgs: [id]);
   }
 }

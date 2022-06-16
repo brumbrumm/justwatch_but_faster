@@ -7,8 +7,8 @@ class Provider{
   final String iconUrl;
 
   Provider({
-    this.id, this.technicalName, this.shortName, this.clearName, this.priority,
-    this.iconUrl,
+    required this.id, required this.technicalName, required this.shortName,
+    required this.clearName, required this.priority, required this.iconUrl,
   });
 
   factory Provider.fromJson(Map<String, dynamic> json){

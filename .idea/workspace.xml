@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -20,14 +31,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aecd8d54-d600-477b-9d4e-05fd34f6ec29" name="Default Changelist" comment="Fix parent widget issue">
+      <change afterPath="$PROJECT_DIR$/analysis_options.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/config/app_settings_config.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/views/home_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/views/movie_detail_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/views/my_archive.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/views/my_watchlist_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.flutter-plugins" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/justwatch_but_faster.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/justwatch_but_faster.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/fetchService.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/fetchService.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/services/sqlDbProvider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/sqlDbProvider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/views/settingView.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/settingView.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/localeChoice.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/locale_choice.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/movie.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/movie.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/setting.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/setting.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/services/fetchService.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/fetch_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/services/sqlDbProvider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/services/sql_db_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/settingView.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/setting_view.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
@@ -46,6 +73,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="1nD1NwrEgNV7upTFfNV3zNsQVkd" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -59,6 +94,8 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
+    <property name="cidr.known.project.marker" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
     <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
@@ -70,6 +107,7 @@
       <method v="2" />
     </configuration>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -123,7 +161,14 @@
       <option name="project" value="LOCAL" />
       <updated>1611915448893</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Code refactor">
+      <created>1620234579143</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1620234579143</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -145,36 +190,7 @@
     <MESSAGE value="Fix parent widget issue" />
     <MESSAGE value="Edited README.md" />
     <MESSAGE value="Added locale choice" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added locale choice" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="100" y="123" width="1240" height="593" key="AVDManager" timestamp="1611910641779">
-      <screen x="0" y="23" width="1440" height="793" />
-    </state>
-    <state x="100" y="123" width="1240" height="593" key="AVDManager/0.23.1440.793@0.23.1440.793" timestamp="1611910641779" />
-    <state width="1398" height="327" key="GridCell.Tab.0.bottom" timestamp="1620234381889">
-      <screen x="0" y="25" width="1440" height="786" />
-    </state>
-    <state width="678" height="155" key="GridCell.Tab.0.bottom/0.23.1440.793@0.23.1440.793" timestamp="1611915593077" />
-    <state width="1398" height="327" key="GridCell.Tab.0.bottom/0.25.1440.786@0.25.1440.786" timestamp="1620234381889" />
-    <state width="1398" height="327" key="GridCell.Tab.0.center" timestamp="1620234381888">
-      <screen x="0" y="25" width="1440" height="786" />
-    </state>
-    <state width="678" height="155" key="GridCell.Tab.0.center/0.23.1440.793@0.23.1440.793" timestamp="1611915593076" />
-    <state width="1398" height="327" key="GridCell.Tab.0.center/0.25.1440.786@0.25.1440.786" timestamp="1620234381888" />
-    <state width="1398" height="327" key="GridCell.Tab.0.left" timestamp="1620234381888">
-      <screen x="0" y="25" width="1440" height="786" />
-    </state>
-    <state width="678" height="155" key="GridCell.Tab.0.left/0.23.1440.793@0.23.1440.793" timestamp="1611915593075" />
-    <state width="1398" height="327" key="GridCell.Tab.0.left/0.25.1440.786@0.25.1440.786" timestamp="1620234381888" />
-    <state width="1398" height="327" key="GridCell.Tab.0.right" timestamp="1620234381888">
-      <screen x="0" y="25" width="1440" height="786" />
-    </state>
-    <state width="678" height="155" key="GridCell.Tab.0.right/0.23.1440.793@0.23.1440.793" timestamp="1611915593076" />
-    <state width="1398" height="327" key="GridCell.Tab.0.right/0.25.1440.786@0.25.1440.786" timestamp="1620234381888" />
-    <state x="25" y="140" width="670" height="676" key="search.everywhere.popup" timestamp="1611911442697">
-      <screen x="0" y="23" width="1440" height="793" />
-    </state>
-    <state x="25" y="140" width="670" height="676" key="search.everywhere.popup/0.23.1440.793@0.23.1440.793" timestamp="1611911442697" />
+    <MESSAGE value="Code refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Code refactor" />
   </component>
 </project>
