@@ -27,3 +27,6 @@ flutter build apk
 ```
 
 ## Knowing issues
+
+## TODO
+- add icon
